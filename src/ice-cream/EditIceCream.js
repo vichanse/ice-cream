@@ -23,19 +23,41 @@ const EditIceCream = ({ match, history }) => {
     iceCream: {},
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [descriptionId, stockId, quantityId, priceId] = useUniqueIds(4);
+  const [
+    descriptionId,
+    descriptionIdErrorId,
+    stockId,
+    quantityId,
+    quantityErrorId,
+    priceId,
+    priceErrorId,
+  ] = useUniqueIds(7);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const descriptionError = useValidation(
+  const formRef = useRef(null);
+
+  const [descriptionError, descriptionErrorProps] = useValidation(
     menuItem.description,
-    validateDescription
+    descriptionIdErrorId,
+    hasSubmitted,
+    validateDescription,
+    true
   );
-  const quantityError = useValidation(
+  const [quantityError, quantityErrorProps] = useValidation(
     menuItem.quantity,
+    quantityErrorId,
+    hasSubmitted,
     validateQuantity,
+    false,
     menuItem.inStock
   );
-  const priceError = useValidation(menuItem.price, validatePrice);
+  const [priceError, priceErrorProps] = useValidation(
+    menuItem.price,
+    priceErrorId,
+    hasSubmitted,
+    validatePrice,
+    true
+  );
 
   useEffect(() => {
     return () => {
@@ -89,7 +111,14 @@ const EditIceCream = ({ match, history }) => {
 
     setHasSubmitted(true);
 
-    if (!descriptionError && !quantityError && !priceError) {
+    if (descriptionError || quantityError || priceError) {
+      setTimeout(() => {
+        const errorControl = formRef.current.querySelector(
+          '[aria-invalid="true"]'
+        );
+        errorControl.focus();
+      });
+    } else {
       const { id, price, inStock, quantity, description, iceCream } = menuItem;
 
       const submitItem = {
@@ -124,13 +153,14 @@ const EditIceCream = ({ match, history }) => {
               <dt>Name:</dt>
               <dd>{menuItem.iceCream.name}</dd>
             </dl>
-            <form onSubmit={onSubmitHandler}>
+            <form onSubmit={onSubmitHandler} noValidate ref={formRef}>
               <label htmlFor={descriptionId}>
                 Description<span aria-hidden="true">*</span>:
               </label>
               <ErrorContainer
                 errorText={descriptionError}
                 hasSubmitted={hasSubmitted}
+                errorId={descriptionIdErrorId}
               >
                 <textarea
                   id={descriptionId}
@@ -138,6 +168,7 @@ const EditIceCream = ({ match, history }) => {
                   rows="3"
                   value={menuItem.description}
                   onChange={onChangeHandler}
+                  {...descriptionErrorProps}
                 />
               </ErrorContainer>
               <label htmlFor={stockId}>InStock:</label>
@@ -155,12 +186,14 @@ const EditIceCream = ({ match, history }) => {
               <ErrorContainer
                 errorText={quantityError}
                 hasSubmitted={hasSubmitted}
+                errorId={quantityErrorId}
               >
                 <select
                   id={quantityId}
                   name="quantity"
                   value={menuItem.quantity}
                   onChange={onChangeHandler}
+                  {...quantityErrorProps}
                 >
                   <option value="0">0</option>
                   <option value="10">10</option>
@@ -176,6 +209,7 @@ const EditIceCream = ({ match, history }) => {
               <ErrorContainer
                 errorText={priceError}
                 hasSubmitted={hasSubmitted}
+                errorId={priceErrorId}
               >
                 <input
                   id={priceId}
@@ -184,6 +218,7 @@ const EditIceCream = ({ match, history }) => {
                   name="price"
                   value={menuItem.price}
                   onChange={onChangeHandler}
+                  {...priceErrorProps}
                 />
               </ErrorContainer>
               <div className="button-container">
