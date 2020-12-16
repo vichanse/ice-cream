@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 const Main = ({ children, headingText, headingLevel = 2, location }) => {
   const heading = useRef(null);
-  const H = `H${headingLevel}`;
+  const H = `h${headingLevel}`;
 
   useEffect(() => {
     if (location.state && location.state.focus) {

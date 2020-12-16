@@ -6,6 +6,8 @@ const useValidation = (value, validatorFn, compareValue = null) => {
   useEffect(() => {
     setError(validatorFn(value, compareValue));
   }, [value, validatorFn, compareValue]);
+
+  return error;
 };
 
 export default useValidation;
