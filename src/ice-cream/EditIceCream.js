@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import LoaderMessage from '../structure/LoaderMessage';
-import { getMenuItem, putMenuItem } from '../data/iceCreamData';
+import { getMenuItem, putMenuItem, deleteMenuItem } from '../data/iceCreamData';
 import PropTypes from 'prop-types';
 import IceCreamImage from './IceCreamImage';
 import useUniqueIds from '../hooks/useUniqueIds';
@@ -136,6 +136,12 @@ const EditIceCream = ({ match, history }) => {
     }
   };
 
+  const onDeleteHandler = () => {
+    deleteMenuItem(match.params.menuItemId).then(() => {
+      history.replace('/', { focus: true });
+    });
+  };
+
   return (
     <Main headingText="Update this beauty">
       <LoaderMessage
@@ -224,6 +230,13 @@ const EditIceCream = ({ match, history }) => {
               <div className="button-container">
                 <button className="ok" type="submit">
                   Save
+                </button>
+                <button
+                  className="warning"
+                  type="button"
+                  onClick={onDeleteHandler}
+                >
+                  Delete
                 </button>
               </div>
             </form>
