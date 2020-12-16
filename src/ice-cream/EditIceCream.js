@@ -5,6 +5,15 @@ import PropTypes from 'prop-types';
 import IceCreamImage from './IceCreamImage';
 import useUniqueIds from '../hooks/useUniqueIds';
 import Main from '../structure/Main';
+import {
+  ValidatePrice,
+  ValidateDescription,
+  ValidateQuantity,
+  validateDescription,
+  validateQuantity,
+  validatePrice,
+} from '../utils/validators';
+import useValidation from '../hooks/useValidation';
 import '../styles/form-spacer.scss';
 
 const EditIceCream = ({ match, history }) => {
@@ -18,6 +27,17 @@ const EditIceCream = ({ match, history }) => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [descriptionId, stockId, quantityId, priceId] = useUniqueIds(4);
+
+  const descriptionError = useValidation(
+    menuItem.description,
+    validateDescription
+  );
+  const quantityError = useValidation(
+    menuItem.quantity,
+    validateQuantity,
+    menuItem.inStock
+  );
+  const priceError = useValidation(menuItem.price, validatePrice);
 
   useEffect(() => {
     return () => {
@@ -69,20 +89,22 @@ const EditIceCream = ({ match, history }) => {
   const onSubmitHandler = e => {
     e.preventDefault();
 
-    const { id, price, inStock, quantity, description, iceCream } = menuItem;
+    if (!descriptionError && !quantityError && !priceError) {
+      const { id, price, inStock, quantity, description, iceCream } = menuItem;
 
-    const submitItem = {
-      id,
-      price: parseFloat(price),
-      inStock,
-      quantity: parseFloat(quantity),
-      description,
-      iceCream: { id: iceCream.id },
-    };
+      const submitItem = {
+        id,
+        price: parseFloat(price),
+        inStock,
+        quantity: parseFloat(quantity),
+        description,
+        iceCream: { id: iceCream.id },
+      };
 
-    putMenuItem(submitItem).then(() => {
-      history.push('/', { focus: true });
-    });
+      putMenuItem(submitItem).then(() => {
+        history.push('/', { focus: true });
+      });
+    }
   };
 
   return (
