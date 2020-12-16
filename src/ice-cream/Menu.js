@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { getMenu } from '../data/iceCreamData';
-import Helmet from 'react-helmet';
 import IceCreamImage from './IceCreamImage';
 import LoaderMessage from '../structure/LoaderMessage';
-import { Link } from 'react-router-dom';
+import FocusLink from '../structure/FocusLink';
 import PropTypes from 'prop-types';
+import Main from '../structure/Main';
 
 const Menu = ({ history }) => {
   const [menu, setMenu] = useState([]);
@@ -24,7 +24,7 @@ const Menu = ({ history }) => {
   }, []);
 
   const onItemClickHandler = to => {
-    history.push(to);
+    history.push(to, { focus: true });
   };
 
   const onLinkClickHandler = e => {
@@ -34,13 +34,7 @@ const Menu = ({ history }) => {
   };
 
   return (
-    <main>
-      <Helmet>
-        <title>
-          Rock your taste buds with one of these! | Vichanse Ice Cream
-        </title>
-      </Helmet>
-      <h2 className="main-heading">Rock your taste buds with one of these!</h2>
+    <Main headingText="Rock your taste buds with one of these!">
       <LoaderMessage
         loadingMessage="Loading menu..."
         isLoading={isLoading}
@@ -59,17 +53,17 @@ const Menu = ({ history }) => {
                   }}
                 >
                   <div className="image-container">
-                    <IceCreamImage iceCreameId={iceCream.id} />
+                    <IceCreamImage iceCreamId={iceCream.id} />
                   </div>
                   <div className="text-container">
                     {' '}
                     <h3>
-                      <Link
+                      <FocusLink
                         to={`/menu-items/${id.toString()}`}
                         onClick={onLinkClickHandler}
                       >
                         {iceCream.name}
-                      </Link>
+                      </FocusLink>
                     </h3>
                     <div className="content card-content">
                       <p className="price">{`$${price.toFixed(2)}`}</p>
@@ -89,7 +83,7 @@ const Menu = ({ history }) => {
       ) : (
         !isLoading && <p>your menu is empty! The sadness!!</p>
       )}
-    </main>
+    </Main>
   );
 };
 
